@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f0f1f3">
+<title>Verifikasi Akses - S-Vid</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    background: linear-gradient(145deg,#f0f6ff,#f4f5f7 60%,#edf3fc);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.card {
+    width: 100%;
+    max-width: 420px;
+    background: #fff;
+    border: 1px solid #e4eaf3;
+    border-radius: 20px;
+    padding: 28px 24px 26px;
+    box-shadow: 0 14px 45px #1f427817;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    margin-bottom: 25px;
+}
+
+.brand-icon {
+    width: 39px;
+    height: 39px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    background: linear-gradient(135deg,#3987ff,#1d4ed8);
+}
+
+.brand-icon svg {
+    width: 23px;
+    height: 23px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.brand-name {
+    color: #15233e;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -.5px;
+}
+
+.brand-name span {
+    color: #2563eb;
+}
+
+.intro {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.intro-icon {
+    width: 68px;
+    height: 68px;
+    margin: 0 auto 16px;
+    border-radius: 21px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(145deg,#edf5ff,#dceaff);
+    border: 1px solid #d9e8ff;
+    color: #2563eb;
+}
+
+.intro-icon svg {
+    width: 37px;
+    height: 37px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.intro h1 {
+    color: #17243d;
+    font-size: 23px;
+    letter-spacing: -.6px;
+    margin-bottom: 10px;
+}
+
+.intro p {
+    color: #718096;
+    font-size: 13px;
+    line-height: 1.75;
+}
+
+.section-label {
+    color: #53647e;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+/* SLIDER */
+
+.slider-container {
+    position: relative;
+    width: 100%;
+    height: 56px;
+    background: #edf1f7;
+    border: 1px solid #e1e7f0;
+    border-radius: 28px;
+    margin-bottom: 17px;
+    overflow: hidden;
+    touch-action: pan-y;
+}
+
+.slider-fill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg,#93c5fd,#3b82f6);
+    border-radius: 28px;
+}
+
+.slider-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    font-size: 13px;
+    color: #748198;
+    pointer-events: none;
+    white-space: nowrap;
+    font-weight: 600;
+}
+
+.slider-handle {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg,#3987ff,#1d4ed8);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: grab;
+    z-index: 2;
+    box-shadow: 0 3px 9px #2563eb40;
+    touch-action: none;
+    border: none;
+}
+
+.slider-handle svg {
+    width: 22px;
+    height: 22px;
+    fill: white;
+}
+
+.card.verified .slider-container {
+    background: #effaf3;
+    border-color: #c5ebd2;
+}
+
+.card.verified .slider-fill {
+    width: 100%;
+    background: linear-gradient(90deg,#22c55e,#16a34a);
+}
+
+.card.verified .slider-text {
+    display: none;
+}
+
+.card.verified .slider-handle {
+    left: calc(100% - 51px);
+    background: #16a34a;
+}
+
+.card.verified .slider-handle svg {
+    display: none;
+}
+
+.card.verified .slider-handle::after {
+    content: "✓";
+    font-size: 23px;
+    color: white;
+    font-weight: bold;
+}
+
+/* PROGRESS */
+
+.progress-box {
+    display: none;
+    margin: 8px 0 17px;
+    padding: 14px;
+    border-radius: 12px;
+    background: #f5f9ff;
+    border: 1px solid #dfebff;
+}
+
+.progress-box.show {
+    display: block;
+}
+
+.progress-heading {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    color: #3c5273;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.progress-time {
+    color: #2563eb;
+    white-space: nowrap;
+}
+
+.progress-track {
+    width: 100%;
+    height: 5px;
+    background: #dce8fb;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg,#60a5fa,#2563eb);
+    border-radius: 10px;
+}
+
+.progress-note {
+    margin-top: 9px;
+    color: #8290a6;
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+/* SUCCESS */
+
+.success-message {
+    text-align: center;
+    margin: 0 0 20px;
+    display: none;
+}
+
+.card.verified .success-message {
+    display: block;
+    animation: appear .35s ease;
+}
+
+.success-icon {
+    width: 43px;
+    height: 43px;
+    margin: 0 auto 9px;
+    border-radius: 50%;
+    background: #e5f8ec;
+    color: #16a34a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.success-text {
+    font-size: 19px;
+    font-weight: 700;
+    color: #168447;
+}
+
+.success-subtext {
+    margin-top: 6px;
+    font-size: 12px;
+    line-height: 1.6;
+    color: #718096;
+}
+
+.hint-text {
+    text-align: center;
+    font-size: 11px;
+    line-height: 1.7;
+    color: #94a3b8;
+}
+
+/* BUTTON */
+
+.btn-lanjut {
+    display: none;
+    width: 100%;
+    max-width: 420px;
+    margin: 20px auto 0;
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(110deg,#3281f5,#1d4ed8);
+    color: white;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 6px 15px #2563eb33;
+}
+
+.btn-lanjut:hover {
+    filter: brightness(1.05);
+}
+
+.btn-lanjut.show {
+    display: block;
+    animation: appear .35s ease;
+}
+
+.footer {
+    margin-top: 22px;
+    text-align: center;
+    font-size: 10px;
+    color: #94a3b8;
+    line-height: 1.8;
+}
+
+.footer strong {
+    color: #64748b;
+}
+
+@keyframes appear {
+    from {
+        opacity: 0;
+        transform: translateY(7px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media(max-width:480px) {
+    body {
+        padding: 18px 14px;
+    }
+
+    .card {
+        padding: 25px 19px 23px;
+    }
+
+    .intro h1 {
+        font-size: 21px;
+    }
+}
+
+@media(prefers-reduced-motion:reduce) {
+    *,*::before,*::after {
+        animation-duration: .01ms !important;
+    }
+}
+</style>
+
+</head>
+
+<body>
+
+<main class="card" id="verificationCard">
+
+    <div class="brand">
+        <div class="brand-icon">
+            <svg viewBox="0 0 24 24">
+                <path d="M12 3 20 6v5c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/>
+                <path d="m8.5 12 2.3 2.3 4.8-5"/>
+            </svg>
+        </div>
+
+        <div class="brand-name">
+            S-<span>Vid</span>
+        </div>
+    </div>
+
+    <div class="intro">
+
+        <div class="intro-icon">
+            <svg viewBox="0 0 24 24">
+                <path d="M12 3 20 6v5c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/>
+                <path d="m8.5 12 2.3 2.3 4.8-5"/>
+            </svg>
+        </div>
+
+        <h1>Verifikasi Akses</h1>
+
+        <p>
+            Selesaikan konfirmasi singkat di bawah ini
+            untuk membuka halaman video.
+        </p>
+
+    </div>
+
+    <div class="section-label">
+        Konfirmasi pengunjung
+    </div>
+
+    <div class="slider-container" id="sliderContainer">
+
+        <div class="slider-fill" id="sliderFill"></div>
+
+        <div class="slider-text">
+            Geser untuk verifikasi
+        </div>
+
+        <button
+            class="slider-handle"
+            id="sliderHandle"
+            type="button"
+            aria-label="Geser untuk memulai konfirmasi"
+        >
+            <svg viewBox="0 0 24 24">
+                <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+            </svg>
+        </button>
+
+    </div>
+
+    <div class="progress-box" id="progressBox" aria-live="polite">
+
+        <div class="progress-heading">
+            <span id="progressLabel">
+                Memproses konfirmasi...
+            </span>
+
+            <span class="progress-time" id="progressTime">
+                4 detik
+            </span>
+        </div>
+
+        <div class="progress-track">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <p class="progress-note" id="progressNote">
+            Mohon tunggu sebentar.
+        </p>
+
+    </div>
+
+    <div class="success-message">
+
+        <div class="success-icon">✓</div>
+
+        <div class="success-text">
+            Konfirmasi selesai!
+        </div>
+
+        <div class="success-subtext">
+            Kamu bisa melanjutkan ke halaman berikutnya.
+        </div>
+
+    </div>
+
+    <p class="hint-text" id="hintText">
+        Geser tombol biru sampai ke ujung untuk memulai konfirmasi.
+    </p>
+
+</main>
+
+
+<button
+    class="btn-lanjut"
+    id="btnLanjut"
+    type="button"
+    onclick="lanjutkan()"
+>
+    Lanjutkan ke Halaman Berikutnya &nbsp; →
+</button>
+
+
+<footer class="footer">
+
+    <strong>S-Vid</strong> · Halaman konfirmasi akses<br>
+
+    © <span id="year"></span> S-Vid
+
+</footer>
+
+
+<script>
+
+/* ELEMENT */
+
+const card = document.getElementById('verificationCard');
+const container = document.getElementById('sliderContainer');
+const fill = document.getElementById('sliderFill');
+const handle = document.getElementById('sliderHandle');
+
+const progressBox = document.getElementById('progressBox');
+const progressBar = document.getElementById('progressBar');
+const progressTime = document.getElementById('progressTime');
+const progressLabel = document.getElementById('progressLabel');
+const progressNote = document.getElementById('progressNote');
+
+const hintText = document.getElementById('hintText');
+const btnLanjut = document.getElementById('btnLanjut');
+
+const STORAGE_KEY = 'svid_access_verified';
+
+let isDragging = false;
+let verified = false;
+let checking = false;
+
+let startX = 0;
+let startLeft = 3;
+let verificationStartedAt = 0;
+
+document.getElementById('year').textContent =
+    new Date().getFullYear();
+
+
+/*
+   KUNJUNGAN BARU VS NAVIGASI KEMBALI
+
+   Kunjungan baru: hapus status verifikasi.
+   Back/Forward: pertahankan status verifikasi.
+*/
+
+function getNavigationType() {
+    const entries = performance.getEntriesByType('navigation');
+
+    return entries.length ? entries[0].type : 'navigate';
+}
+
+const navigationType = getNavigationType();
+
+if (navigationType !== 'back_forward') {
+    try {
+        sessionStorage.removeItem(STORAGE_KEY);
+    } catch (error) {
+        console.warn('Session storage tidak tersedia.');
+    }
+}
+
+
+/* CEK STATUS TERSIMPAN */
+
+function checkSavedVerification() {
+    try {
+        return sessionStorage.getItem(STORAGE_KEY) === 'true';
+    } catch (error) {
+        return false;
+    }
+}
+
+
+/* SIMPAN STATUS */
+
+function saveVerification() {
+    try {
+        sessionStorage.setItem(STORAGE_KEY, 'true');
+        return true;
+    } catch (error) {
+        console.warn('Penyimpanan verifikasi tidak tersedia.');
+        return false;
+    }
+}
+
+
+/* POSISI MAKSIMAL SLIDER */
+
+function maxPosition() {
+    return container.clientWidth - handle.offsetWidth - 6;
+}
+
+
+/* AKTIFKAN STATUS TERVERIFIKASI */
+
+function activateVerifiedState(saved = false) {
+
+    verified = true;
+    checking = false;
+
+    card.classList.add('verified');
+
+    container.style.pointerEvents = 'none';
+
+    handle.style.left = maxPosition() + 'px';
+
+    fill.style.width = '100%';
+
+    progressBox.classList.remove('show');
+
+    progressBar.style.width = '100%';
+
+    progressLabel.textContent = 'Konfirmasi selesai';
+
+    progressTime.textContent = '100%';
+
+    progressNote.textContent = 'Konfirmasi berhasil.';
+
+    hintText.textContent = saved
+        ? 'Verifikasi sebelumnya masih tersimpan di sesi ini.'
+        : 'Verifikasi berhasil disimpan.';
+
+    handle.setAttribute(
+        'aria-label',
+        'Konfirmasi selesai'
+    );
+
+    btnLanjut.classList.add('show');
+}
+
+
+/* PULIHKAN STATUS */
+
+if (checkSavedVerification()) {
+    activateVerifiedState(true);
+}
+
+
+/* MULAI GESER */
+
+function startDrag(e) {
+
+    if (verified || checking) return;
+
+    isDragging = true;
+
+    startX = e.clientX;
+
+    startLeft = parseFloat(handle.style.left) || 3;
+
+    try {
+        handle.setPointerCapture(e.pointerId);
+    } catch (_) {}
+
+    e.preventDefault();
+}
+
+
+/* PROSES GESER */
+
+function drag(e) {
+
+    if (!isDragging || verified || checking) return;
+
+    const maxX = maxPosition();
+
+    const posX = Math.max(
+        3,
+        Math.min(startLeft + e.clientX - startX, maxX)
+    );
+
+    handle.style.left = posX + 'px';
+
+    fill.style.width =
+        ((posX + handle.offsetWidth) /
+        container.clientWidth * 100) + '%';
+
+    if (posX >= maxX - 3) {
+
+        isDragging = false;
+
+        beginVerification();
+
+    }
+}
+
+
+/* LEPAS SLIDER */
+
+function endDrag() {
+
+    if (!isDragging) return;
+
+    isDragging = false;
+
+    if (!verified && !checking) {
+
+        handle.style.left = '3px';
+
+        fill.style.width = '0%';
+
+    }
+}
+
+
+/* EVENT SLIDER */
+
+handle.addEventListener('pointerdown', startDrag);
+
+document.addEventListener('pointermove', drag);
+
+document.addEventListener('pointerup', endDrag);
+
+document.addEventListener('pointercancel', endDrag);
+
+
+/* MULAI VERIFIKASI */
+
+function beginVerification() {
+
+    if (checking || verified) return;
+
+    checking = true;
+
+    handle.style.left = maxPosition() + 'px';
+
+    fill.style.width = '100%';
+
+    container.style.pointerEvents = 'none';
+
+    progressBox.classList.add('show');
+
+    progressLabel.textContent =
+        'Memproses konfirmasi...';
+
+    progressNote.textContent =
+        'Mohon tunggu beberapa detik hingga proses selesai.';
+
+    hintText.textContent =
+        'Konfirmasi sedang berlangsung.';
+
+    verificationStartedAt = performance.now();
+
+    const duration = 4000;
+
+    function updateProgress(now) {
+
+        const elapsed = now - verificationStartedAt;
+
+        const percentage = Math.min(
+            100,
+            elapsed / duration * 100
+        );
+
+        const remaining = Math.max(
+            0,
+            Math.ceil((duration - elapsed) / 1000)
+        );
+
+        progressBar.style.width = percentage + '%';
+
+        progressTime.textContent =
+            remaining > 0
+                ? remaining + ' detik'
+                : 'Selesai';
+
+        if (percentage < 100) {
+
+            requestAnimationFrame(updateProgress);
+
+        } else {
+
+            finishVerification();
+
+        }
+
+    }
+
+    requestAnimationFrame(updateProgress);
+}
+
+
+/* SELESAI DAN SIMPAN */
+
+function finishVerification() {
+
+    const saved = saveVerification();
+
+    if (saved) {
+        activateVerifiedState(false);
+    } else {
+        checking = false;
+        container.style.pointerEvents = 'auto';
+        handle.style.left = '3px';
+        fill.style.width = '0%';
+        progressBox.classList.remove('show');
+        hintText.textContent =
+            'Browser tidak dapat menyimpan status. Coba lagi.';
+        showStorageWarning();
+    }
+
+}
+
+function showStorageWarning() {
+    progressLabel.textContent = 'Penyimpanan gagal';
+}
+
+
+/* LANJUTKAN */
+
+function lanjutkan() {
+
+    if (!verified) return;
+
+    window.location.href = 'pilihdata.html';
+
+}
+
+
+/* SESUAIKAN POSISI SAAT KEMBALI */
+
+window.addEventListener('pageshow', function(event) {
+
+    if (event.persisted && checkSavedVerification()) {
+        activateVerifiedState(true);
+    }
+
+});
+
+
+/* SESUAIKAN POSISI SLIDER SAAT UKURAN BERUBAH */
+
+window.addEventListener('resize', function() {
+
+    if (verified) {
+        handle.style.left = maxPosition() + 'px';
+    }
+
+});
+
+</script>
+
+</body>
+</html>
